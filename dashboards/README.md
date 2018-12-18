@@ -29,16 +29,16 @@ you wish to use for the content. The following are the available fields:
 
 ### For Heatmaps
 
-* heatmap: boolean indicating if a heatmap should be displayed
-* heatmap_message: A text string shown underneath the heatmap visualisation
-* fieldname: a fieldname from the current doctype that will be used as a key into other related doctypes
-* non_standard_fieldnames: An object containing key value pairs. This is a map of where to find the matching fieldname(above)
+* __heatmap__: boolean indicating if a heatmap should be displayed
+* __heatmap_message__: A text string shown underneath the heatmap visualisation
+* __fieldname__: a fieldname from the current doctype that will be used as a key into other related doctypes
+* __non_standard_fieldnames__: An object containing key value pairs. This is a map of where to find the matching fieldname(above)
 in the related docs. Use this when the related doc stores the reference key in a differently named field. This often appears to 
 be the case if the value is actually in a child table
-  * Key: string. Formatted name 
-  * Value: string. the internal field name that you want replaced by the formatted key.
-* internal_links: An object containing key value pairs
-  * Key: String. DocType name
-  * Value: Array of strings. Each string represents
-* transactions: an array of objects. Each object includes:
-  * label: A grouping label that can be displayed on the 
+  * __Key__: string. The related doctype name. This is the table where we will need to find the key in a different field 
+  * __Value__: string. The fieldname in the related doctype that will match the fieldname in the current doctype
+* __internal_links__: An object containing key value pairs
+  * __Key__: String. DocType name
+  * __Value__: Array of strings. Each string represents
+* __transactions__: an array of objects. Each object includes:
+  * __label__: A grouping label that can be displayed on the 
