@@ -51,7 +51,27 @@ def get_data():
 
 [Frappe.io's Chart Component Site](https://frappe.io/charts/docs)
 
-There is not a lot of examples of using frappe's built in charting components, however I believe that the charting component link above describes the available options. The *frappe.utils.goal.get_monthly_goal_graph_data* function is also provided out of the box and appears to do a lot of heavy lifting. This should be the go-to option before trying to craft a new custom charting method.
+There is not a lot of examples of using frappe's built in charting components, however the documentaion at the link above provides all of the information on how to structure the data for different types of charts and features. Essentially, the **graph_method** that is called must return a data object structured similar to the example below:
+
+```Python
+data = {
+    labels: ["12am-3am", "3am-6pm", "6am-9am", "9am-12am",
+        "12pm-3pm", "3pm-6pm", "6pm-9pm", "9am-12am"
+    ],
+    datasets: [
+        {
+            name: "Some Data", type: "bar",
+            values: [25, 40, 30, 35, 8, 52, 17, -4]
+        },
+        {
+            name: "Another Set", type: "line",
+            values: [25, 50, -10, 15, 18, 32, 27, 14]
+        }
+    ]
+}
+```
+
+The required fields in the *[Doctype Name]_dahshboard.py* file are:
 
 * __graph__: Boolean. Set to true to display a chart
 * __graph_method__: a dot notation string to the whitelisted python function that will return the required data for the chart
