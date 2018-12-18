@@ -3,7 +3,6 @@
 Dashboards appear at the top of a Doctype form when you view a record. There are a number of options available:
 
 1. **Heatmaps**
-
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/dashboards/Screenshot%202018-12-18%20at%2017.12.32.png?raw=true "Heatmap Screenshot")
 
 1. **Charts**
