@@ -120,4 +120,62 @@ be the case if the value is actually in a child table
 * __transactions__: an array of objects. Each object includes:
   * __label__: A grouping label that can be displayed on the summary area
   * __items__: The Doctypes included in the grouping
-  
+
+***Example configuration of [Doctype name]_dashboard.py***
+```Python
+from frappe import _
+
+def get_data():
+	return {
+		'fieldname': 'project',
+		'transactions': [
+			{
+				'label': _('Project'),
+				'items': ['Task', 'Timesheet', 'Expense Claim', 'Issue' , 'Project Update']
+			},
+			{
+				'label': _('Material'),
+				'items': ['Material Request', 'BOM', 'Stock Entry']
+			},
+		]
+	}
+```
+
+***A detailed example configuration of [Doctype name]_dashboard.py***
+```Python
+from frappe import _
+
+def get_data():
+	return {
+		'fieldname': 'purchase_order',
+		'non_standard_fieldnames': {
+			'Journal Entry': 'reference_name',
+			'Payment Entry': 'reference_name',
+			'Auto Repeat': 'reference_document'
+		},
+		'internal_links': {
+			'Material Request': ['items', 'material_request'],
+			'Supplier Quotation': ['items', 'supplier_quotation'],
+			'Project': ['items', 'project'],
+		},
+		'transactions': [
+			{
+				'label': _('Related'),
+				'items': ['Purchase Receipt', 'Purchase Invoice']
+			},
+			{
+				'label': _('Payment'),
+				'items': ['Payment Entry', 'Journal Entry']
+			},
+			{
+				'label': _('Reference'),
+				'items': ['Material Request', 'Supplier Quotation', 'Project', 'Auto Repeat']
+			},
+			{
+				'label': _('Sub-contracting'),
+				'items': ['Stock Entry']
+			},
+		]
+	}
+
+```
