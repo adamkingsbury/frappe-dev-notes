@@ -299,7 +299,7 @@ In order to handle clicks for quick entry the following would need to happen:
 1. There will need to be:
 	1. less than 7 fields defined as available for quick entry, or required
 	1. the entire doctype must be marked to allow quick entry
-1. You must override the "create new" buttons on all of the follwoing views (the ones you intend to have available):
+1. You must override the "create new" buttons on all of the following views (the ones you intend to have available):
 	1. list view
 	1. form view
 	1. kanban view
@@ -307,7 +307,32 @@ In order to handle clicks for quick entry the following would need to happen:
 	1. calendar view
 	1. reports (?? Unsure about this one)
 1. For each of the overridden actions you will need to call *frappe.new_doc(doctype, options, after_init_callback)
-1. Within the after_init_callback you will need to call:
+1. Within the after_init_callback you will need to set the click handler for the button.
+
+This is an example of how to do so for a list view *[Doctype name]_list.js*:
 ```Javascript
-frm.fields_dict.**field_name_here**.$wrapper.on("click", function() => {/*Code On click here*/})
+frappe.listview_settings['Doctype name here'] = {
+	
+	//override the primary action
+	primary_action: function(listview){
+
+		//Options to pre-fill in the new doc
+		const opts = {};
+
+		frappe.new_doc(
+			cur_list.doctype,
+			opts,
+			init_callback
+		);
+
+		function init_callback(dialog){
+			
+			//set up the action for the button 
+			//(replace "testbutton" with the name of your defined button fieldname.)
+			dialog.fields_dict.testbutton.df.click = function(){
+				frappe.msgprint("button hooked up");
+			};
+		}
+	}
+};
 ```
