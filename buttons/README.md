@@ -275,8 +275,10 @@ It is also possible to define buttons within the field designer. Simply create a
 
 It should be noted that buttons defined in the doctype will not be permitted to be displayed in list views, and whilst it is possible to add them to quick enty forms, it is much more difficult to attach click handlers when the button is displayed in quick entry mode.
 
+To add a button via a doctype definition, edit the Doctype from the DocType List. Then add a field definition and set its type to "Button"
+![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Doctype%20Button%20setup.png?raw=true "Setup of a doctype button")
 
-
+This will allow for the display of a button directly within a form:
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Doctype%20Form%20Button.png?raw=true "Doctype field buttons")
 
 To add a click handler to a button created in the doctype designer, the following template should be used inside the *[Doctype name].js* file
@@ -289,4 +291,23 @@ frappe.ui.form.on('Doctype name here', {
 ```
 
 ## Field based buttons - in quick entry
+As noted previously, if you set up a button in a Doctype definition as available in quick entry mode, it is possible to display the button, but it will not have a click handler attached - even if you have defined a click handler for the main form view.
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Doctyp%20Form%20Button%20-%20Quick%20Entry.png?raw=true "Doctype field button in quick entry")
+
+In order to handle clicks for quick entry the following would need to happen:
+1. Add the button in the doctype definition and set the field as available in quick entry.
+1. There will need to be:
+	1. less than 7 fields defined as available for quick entry, or required
+	1. the entire doctype must be marked to allow quick entry
+1. You must override the "create new" buttons on all of the follwoing views (the ones you intend to have available):
+	1. list view
+	1. form view
+	1. kanban view
+	1. activity view
+	1. calendar view
+	1. reports (?? Unsure about this one)
+1. For each of the overridden actions you will need to call *frappe.new_doc(doctype, options, after_init_callback)
+1. Within the after_init_callback you will need to call:
+```Javascript
+frm.fields_dict.**field_name_here**.$wrapper.on("click", function() => {/*Code On click here*/})
+```
