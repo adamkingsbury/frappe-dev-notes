@@ -7,19 +7,40 @@ This is one of the simplest options available. Adding custom buttons on a form v
 
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Custom%20Button.png?raw=true "Custom button on a form")
 
-To add the button use the following template:
+To add the button to a form use the following template inside the *[Doctype name].js* file:
 ```Javascript
 frappe.ui.form.on('doctype name', {
 	refresh: function(frm) {
 
-		frm.add_custom_button(
-			"Button label text",
+		frm.page.add_inner_button(
+			"Button Text",
 			function(){
 
-			//Code when button is clicked goes here
+				// code to run when button is clicked goes here
 
 			},
-			__("Link Activivities from")
+			null,		//This is a non-grouped button so don't supply a group
+			"primary" 	//This sets the style of the top level button (default, primary, secondary, warning, success, danger, info)
+		);
+	}
+});
+```
+
+To add a custom button on a list view, use the follwoing template in a *[Doctype name]_list.js* file:
+```Javascript
+frappe.listview_settings['Doctype name here'] = {
+
+	onload: function(listview){
+
+		listview.page.add_inner_button(
+			"Button Text",
+			function(){
+
+				// code to run when button is clicked goes here
+
+			},
+			null,		//This is a non-grouped button so don't supply a group
+			"primary" 	//This sets the style of the top level button (default, primary, secondary, warning, success, danger, info)
 		);
 	}
 });
@@ -30,29 +51,58 @@ Similar to the simple custom button, it is also possible to add several buttons 
 
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Custom%20Button%20Dropdown.png?raw=true "Custom Dropdown Button Group")
 
-To add the button use the following template:
+To add the button to a form use the following template inside the *[Doctype name].js* file:
 ```Javascript
 frappe.ui.form.on('doctype name', {
 	refresh: function(frm) {
 
-		frm.add_custom_button(
-			"Group button 1 text",
+		frm.page.add_inner_button(
+			"Button Text",
 			function(){
 
-				//Code when button is clicked goes here
+				// code to run when button is clicked goes here
 
 			},
-			__("The group lablel")
+			"Button Group Label"
 		);
 		
-		frm.add_custom_button(
-			"Group Button 2 text",
+		frm.page.add_inner_button(
+			"Button Text 2",
 			function(){
 
-				//Code when button is clicked goes here
+				// code to run when button is clicked goes here
 
 			},
-			__("The group lablel")
+			"Button Group Label"
+		);
+	}
+});
+```
+
+To add a custom button on a list view, use the follwoing template in a *[Doctype name]_list.js* file:
+```Javascript
+frappe.listview_settings['Doctype name here'] = {
+
+	onload: function(listview){
+
+		listview.page.add_inner_button(
+			"Button Text",
+			function(){
+
+				// code to run when button is clicked goes here
+
+			},
+			"Button Group Label"
+		);
+		
+		listview.page.add_inner_button(
+			"Button Text 2",
+			function(){
+
+				// code to run when button is clicked goes here
+
+			},
+			"Button Group Label"
 		);
 	}
 });
@@ -61,6 +111,24 @@ frappe.ui.form.on('doctype name', {
 ## Menu Buttons in the regular menu list
 The menu button appears on almost all pages and contains a number of common actions. Most of the time the menu actions do not change, so it is not recommended to alter this group very often. To add to this group dynamically you will most likely want to hook into the List View or standard form view events, however it should also be possible in other page views as will using a similar pattern.
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Menu%20Button%20-%20Not%20Standard.png?raw=true "Menu button in standard list")
+
+To add a standard placement menu item into a form view, the follwoing template should be used inside the *[Doctype name].js* file
+```Javascript
+frappe.ui.form.on('doctype name', {
+	refresh: function(frm) {
+
+		frm.page.add_menu_item(
+			"Button Text",
+			function(){
+
+			// code to run when button is clicked goes here
+
+			},
+			true //the button is part of the standard menu list
+		);
+	}
+});
+```
 
 To add a standard placement menu item in a list view, the following template should be used in a *[Doctype name]_list.js* file.
 ```Javascript
@@ -81,6 +149,10 @@ frappe.listview_settings['Doctype name here'] = {
 };
 ```
 
+## Menu Buttons separated from the regular items
+When adding items into standard menu items it may be preferable to ensure the new actions are separated out from the standard actions and placed in a visible location. This can be achieved by switching the third argument (a boolean) of the *add_menu_item* function to to indicate the button is a non standard item. This places the item at the top of the menu and places a separator line between it and the standard menu items.
+![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Menu%20Button%20Standard.png?raw=true "Menu button in non standard list")
+
 To add a stnadard placement menu item into a form view, the follwoing template should be used inside the *[Doctype name].js* file
 ```Javascript
 frappe.ui.form.on('doctype name', {
@@ -93,16 +165,11 @@ frappe.ui.form.on('doctype name', {
 			// code to run when button is clicked goes here
 
 			},
-			true //the button is part of the standard menu list
+			false //the button is NOT standard
 		);
 	}
 });
 ```
-
-
-## Menu Buttons separated from the regular items
-When adding items into standard menu items it may be preferable to ensure the new actions are separated out from the standard actions and placed in a visible location. This can be achieved by switching the third argument (a boolean) of the *add_menu_item* function to to indicate the button is a non standard item. This places the item at the top of the menu and places a separator line between it and the standard menu items.
-![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Menu%20Button%20Standard.png?raw=true "Menu button in non standard list")
 
 To add a non-standard placement menu item in a list view, the following template should be used in a *[Doctype name]_list.js* file.
 ```Javascript
@@ -123,12 +190,55 @@ frappe.listview_settings['Doctype name here'] = {
 };
 ```
 
-To add a stnadard placement menu item into a form view, the follwoing template should be used inside the *[Doctype name].js* file
+## Action buttons in the actions list
+![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Actions%20Button%20-%20Standard.png?raw=true "Action Button in standard items")
+
+To add a standard placement action menu item into a form view, the follwoing template should be used inside the *[Doctype name].js* file:
 ```Javascript
 frappe.ui.form.on('doctype name', {
 	refresh: function(frm) {
 
-		frm.page.add_menu_item(
+		frm.page.add_actions_menu_item(
+			"Button Text",
+			function(){
+
+			// code to run when button is clicked goes here
+
+			},
+			true //the button is part of the standard menu list
+		);
+	}
+});
+```
+
+To add a standard placement action menu item in a list view, the following template should be used in a *[Doctype name]_list.js* file:
+```Javascript
+frappe.listview_settings['Doctype name here'] = {
+
+	onload: function(listview){
+
+		listview.page.add_actions_menu_item(
+			"Button Text",
+			function(){
+
+				// code to run when button is clicked goes here
+
+			},
+			true //the button is part of the standard menu list
+		);
+	}
+};
+```
+
+## Action buttons separated from the regular items
+![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Actions%20Button%20-%20Not%20Standard.png?raw=true "Action Button separated from standard items")
+
+To add a standard placement action menu item into a form view, the follwoing template should be used inside the *[Doctype name].js* file:
+```Javascript
+frappe.ui.form.on('doctype name', {
+	refresh: function(frm) {
+
+		frm.page.add_actions_menu_item(
 			"Button Text",
 			function(){
 
@@ -141,14 +251,42 @@ frappe.ui.form.on('doctype name', {
 });
 ```
 
-## Action buttons in the actions list
-![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Actions%20Button%20-%20Standard.png?raw=true "Action Button in standard items")
+To add a standard placement action menu item in a list view, the following template should be used in a *[Doctype name]_list.js* file:
+```Javascript
+frappe.listview_settings['Doctype name here'] = {
 
-## Action buttons separated from the regular items
-![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Actions%20Button%20-%20Not%20Standard.png?raw=true "Action Button separated from standard items")
+	onload: function(listview){
+
+		listview.page.add_actions_menu_item(
+			"Button Text",
+			function(){
+
+				// code to run when button is clicked goes here
+
+			},
+			false //the button is NOT standard
+		);
+	}
+};
+```
 
 ## Field based buttons
+It is also possible to define buttons within the field designer. Simply create a field in the doctype definition and set it's type as button. The button will be created and placed on the form along with all of the other fields that you have defined. The final step is to then add a click handler for the button.
+
+It should be noted that buttons defined in the doctype will not be permitted to be displayed in list views, and whilst it is possible to add them to quick enty forms, it is much more difficult to attach click handlers when the button is displayed in quick entry mode.
+
+
+
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Doctype%20Form%20Button.png?raw=true "Doctype field buttons")
+
+To add a click handler to a button created in the doctype designer, the following template should be used inside the *[Doctype name].js* file
+```Javascript
+frappe.ui.form.on('Doctype name here', {
+	button_field_name_from_doctype: function(frm) {
+		//Code when button is executed here
+	}
+});
+```
 
 ## Field based buttons - in quick entry
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/buttons/Doctyp%20Form%20Button%20-%20Quick%20Entry.png?raw=true "Doctype field button in quick entry")
