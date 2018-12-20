@@ -322,7 +322,7 @@ frappe.listview_settings['Doctype name here'] = {
 		frappe.new_doc(
 			cur_list.doctype,
 			opts,
-			init_callback
+			init_callback  //This will only be called if quick entry is used.Otherwise regular form handlers apply.
 		);
 
 		function init_callback(dialog){
