@@ -139,8 +139,8 @@ def get_data():
 
 * __method__: Optional. You almost certainly don't need this. The dot notation function call to a whitelisted server side (python) function. If you do not provide this, the dashboard will default to the functionality provided by *frappe.desk.notifiactions.get_open_count* The default method counts the number of **"open"** documents. The rules for what constitutes an open document can be defined in frappe hooks. 
 The default function also handles heatmap data.
-* __fieldname__: a fieldname from the current doctype that will be used as a key into other related doctypes
-* __non_standard_fieldnames__: An object containing key value pairs. If some docs don't use the same key fieldname, you can map individul exceptions here. Format for the map is:
+* __fieldname__: String. The default column name in related doctypes to find a refernece to the primary doctype record.
+* __non_standard_fieldnames__: An object containing key value pairs. If some docs don't use the same key fieldname, you can map individual exceptions here. Format for the map is:
   * __Key__: string. The related doctype name. This is the table where we will need to find the key in a different field 
   * __Value__: string. The fieldname in the related doctype that will contain the reference to the name (ID) of the primary doc.
 * __internal_links__: defines a different kind of link. If your primary doctype has child tables, and those tables reference another doctype, then this defines which field in the child table to use as a key back to the related doctype name field. The structure is:
