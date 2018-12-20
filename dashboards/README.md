@@ -11,7 +11,7 @@ Dashboards appear at the top of a Doctype form when you view a record. There are
 1. **Transactions**
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/dashboards/Screenshot%202018-12-18%20at%2017.14.31.png?raw=true "Transactions Screenshot")
 
-##Setup
+## Setup
 
 To implement a dashboard, create a new file in the appropriate doctype folder called [doctype name]_dashboard.py
 
@@ -33,11 +33,11 @@ def get_data():
 The get_data() function must return an object defining what deashboard elements you wish to display and the options
 you wish to use for the content. The following are the available fields:
 
-### For Heatmaps
+# For Heatmaps
 
 * __heatmap__: boolean indicating if a heatmap should be displayed
 * __heatmap_message__: A text string shown underneath the heatmap visualisation
-* __method__: the dot notation function call to a whitelisted server side (python) function. If you do not provide this, the dashboard will default to the functionality provided by *frappe.desk.notifiactions.get_open_count* If you are not also using transactions views in the dashboard, then the function will simply look in *[Doctype Name].py* for a function called "*get_timeline_data*".
+* __method__: Optional. You will almost certainly not need to use this. The dot notation function call to a whitelisted server side (python) function. If you do not provide this, the dashboard will default to the functionality provided by *frappe.desk.notifiactions.get_open_count* The function will simply look in *[Doctype Name].py* for a function called "*get_timeline_data*".
 
 **Warning**: If you are using both transactions and heatmaps on the dashboard, then be aware that the method you use must handle both the counting of transactions that will be applied as badges AND also provide the heatmap dataset - particularly important if you are overriding the default method.
 
@@ -49,7 +49,6 @@ def get_data():
 	return {
 		'heatmap': True,
 		'heatmap_message': _('This is based on the Time Sheets created against this project'),
-		'fieldname': 'project',
 	}
 ```
 
@@ -81,7 +80,7 @@ def get_timeline_data(doctype, name):
 ```
 
 
-### For Charts
+# For Charts
 
 [Frappe.io's Chart Component Site](https://frappe.io/charts/docs)
 
@@ -136,16 +135,17 @@ def get_data():
 ```
 
 
-### For Transaction Links and Notifications
+# For Transaction Links and Notifications
 
-* __method__: the dot notation function call to a whitelisted server side (python) function. If you do not provide this, the dashboard will default to the functionality provided by *frappe.desk.notifiactions.get_open_count* The default method counts the number of open documents and also looks at the function list provided in *[Doctype Name].py* for a function called "*get_timeline_data*". As long as you have defined a get_timeline_data function for each document type listed in your transactions list, these items will be added to the heatmap.
+* __method__: Optional. You almost certainly don't need this. The dot notation function call to a whitelisted server side (python) function. If you do not provide this, the dashboard will default to the functionality provided by *frappe.desk.notifiactions.get_open_count* The default method counts the number of **"open"** documents. The rules for what constitutes an open document can be defined in frappe hooks. 
+The default function also handles heatmap data.
 * __fieldname__: a fieldname from the current doctype that will be used as a key into other related doctypes
-* __non_standard_fieldnames__: An object containing key value pairs. This is a map of where to find the matching fieldname(above)
-in the related docs. Use this when the related doc stores the reference key in a differently named field. This often appears to 
-be the case if the value is actually in a child table
+* __non_standard_fieldnames__: An object containing key value pairs. If some docs don't use the same key fieldname, you can map individul exceptions here. Format for the map is:
   * __Key__: string. The related doctype name. This is the table where we will need to find the key in a different field 
-  * __Value__: string. The fieldname in the related doctype that will match the fieldname in the current doctype
-* __internal_links__: Slightly unclear on usage. Looks like it prevents values from appearing in heatmaps and potentially from appearing in summary data as well. An object containing key value pairs.
+  * __Value__: string. The fieldname in the related doctype that will contain the reference to the name (ID) of the primary doc.
+* __internal_links__: defines a different kind of link. If your primary doctype has child tables, and those tables reference another doctype, then this defines which field in the child table to use as a key back to the related doctype name field. The structure is:
+  * __key__: The name of the related doctype
+  * __value__: An array with 2 strings. String 1 = child table field name in the primary doc. String 2 = filedname in the child table that contains the related doctype name.  
 * __transactions__: an array of objects. Each object includes:
   * __label__: A grouping label that can be displayed on the summary area
   * __items__: The Doctypes included in the grouping
@@ -340,9 +340,6 @@ notification_config = "app_name_here.notifications.get_notification_config"
 1. Create a new file in the same diretory as hooks.py. The new filename should be called **notifications.py**
 1. Define the following function inside the file:
 ```Python
-# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-# MIT License. See license.txt
-
 from __future__ import unicode_literals
 import frappe
 
