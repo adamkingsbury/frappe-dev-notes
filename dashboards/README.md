@@ -260,7 +260,9 @@ def get_open_count(doctype, name, items=[]):
 			# internal link
 			continue
 
-		#get any filters that need to be applied based on settings found in frappe hooks
+		# get any filter rules for the doctype - they should be defined in frappe hooks
+		# If no fileters are found in hooks, then this function will esentially count ALL DOCS where the
+		# primary doctype name is found in the expected fieldname column of the related table
 		filters = get_filters_for(d)
 		
 		# if the current item(doctype) is in the nonstandard fields list, use the non-standard field name
@@ -314,4 +316,53 @@ So the final structure of the returned data may look like:
 	],
 	'timeline_data': "" #this dataset is outside the scope of the current analysis
 }
+```
+
+#### Setting up filter rules in frappe hooks
+As noted in the code above, the *frappe.desk.notifiactions.get_open_count* is a bit of a strange function:
+1. It's overloaded and actually deals with both transaction counts AND heatmap data
+1. while the name saya get open count, if you haven't defined any tansaction filter rules in frappe hooks, it's actually just returning a count of documents with a relatinship to the source doc.
+
+As such, if you want to get all of the free functionality with minimal code, then you need to define which records *frappe.desk.notifiactions.get_open_count* should actually count by setting up frappe hooks.
+
+To set up frappe hooks:
+1. edit the **hooks.py** file in your apps main directory.
+1. uncomment the following lines:
+```Python
+# Desk Notifications
+# ------------------
+# See frappe.core.notifications.get_notification_config
+
+#the line below was uncommented
+notification_config = "app_name_here.notifications.get_notification_config"
+```
+
+1. Create a new file in the same diretory as hooks.py. The new filename should be called **notifications.py**
+1. Define the following function inside the file:
+```Python
+# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
+# MIT License. See license.txt
+
+from __future__ import unicode_literals
+import frappe
+
+def get_notification_config():
+	return {
+		"for_doctype": {
+			
+			#The following are examples of how to define a notification filter count rule for a doctype
+			#using standard field/value rules. Replace with your own doctypes and rules
+			"Error Log": {"seen": 0},
+			"Communication": {"status": "Open", "communication_type": "Communication"},
+			"Error Snapshot": {"seen": 0, "parent_error_snapshot": None},
+			"Workflow Action": {"status": 'Open'},
+			
+			#The following are examples of applying a dot notation function call instead of a filter rule
+			#These functions will return a count value....over-riding the filter query logic
+			#Delete these or replace with your own doctypes and function calls
+			"ToDo": "frappe.core.notifications.get_things_todo",
+			"Event": "frappe.core.notifications.get_todays_events",
+			
+		}
+	}
 ```
