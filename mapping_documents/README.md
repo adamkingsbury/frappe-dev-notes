@@ -10,4 +10,26 @@ Frappe provides client side functionality and server side functionality to deal 
 ## Client Side
 Usually this type of functionality will be incorporated by createing a custom button. When the user clickes the button the *frappe.model.open_mapped_doc* function is called and a copy of the current doctype is copied over to a new destination doctype.
 
+The new doctype will then be opened on screen, **usaved** and awaiting the user to fill in any further required details.
+
 Whilst the open mapped doc function *can* try to map data automatically, it is much better practice to explicitly provide a mapping specification telling the function which field in the source doc, goes to which filed in the destination doc.
+
+### creating the button hook in [Doctype Name].js
+```Javascript
+frappe.ui.form.on("Doctype Name Here", {
+	setup: function(frm) {
+    this.frm.add_custom_button(
+      'Button Title Here',
+			function(frm) { me.make_material_request() }
+      , __("Group Button Title Here")
+    );
+    
+    make_mapped_doc: function() {
+		frappe.model.open_mapped_doc({
+			method: "erpnext.selling.doctype.sales_order.sales_order.make_sales_invoice",
+			frm: this.frm
+		})
+	},
+  }
+});
+```
