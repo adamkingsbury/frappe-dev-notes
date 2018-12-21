@@ -6,10 +6,10 @@ Frappe has a lot of free functionality with respect to defining database tables 
 One of the first things you may want to do is have a table of related data displayed inside a form for a particular record. This is achieved by using a **Table** field in the primary Doctype and using a secondary doctype that is marked as a child table.
 
 **A table field definition in a primary doctype**
-![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/data_modelling/Child%20Table%20Doctype%20Example.png?raw=true "Primary doctype definition")
+![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/data_modelling/Primary%20Doctype%20Example.png?raw=true "Primary doctype definition")
 
 **Marking a secondary doctype as a child table**
-![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/data_modelling/Primary%20Doctype%20Example.png?raw=true "Child table doctype definition")
+![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/data_modelling/Child%20Table%20Doctype%20Example.png?raw=true "Child table doctype definition")
 
 **Viewing the resulting interface on a primary doctype record**
 ![alt text](https://github.com/adamkingsbury/frappe-dev-notes/blob/master/data_modelling/Interface%20example.png?raw=true "Resulting interface")
