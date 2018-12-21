@@ -84,17 +84,60 @@ This field is also used to manage differening parent field references if more th
 The idx field corresponds to the row ordering that is displayed in the interface. This will determine which position each item will appear at an this is automatically updated when using the interface.....it is not looked after automatically if you are working with this table programatically.
 
 ## Don't Use Child Tables at all
+If you don't need to visually see a list of child items in the parent record, then this is the simplest solution. Simply add a link field in doctype and point at another doctype. In this way many children can point at the one parent document. The restriction here is that without a child table or some other linking doctype. a child can only point to one doctype at a time (in the same field at least).
 
+![alt text](Don't%20use%20child%20tables%20at%20all.png?raw=true "Don't use child tables at all ERD example")
+
+You could also add a transactions dashboard area to the parent, which would indicate to the user that there is a related child table. The dashboard area would add the capability to add a child record with the linked parent field already filled in. It would also have a notification count against each related doctyple based on how many are considered active/open at that moment
+
+The biggest issue with this option is that if you navigate directly to a doctype lower down the chain, then you will see an unfiltered view of the table. Additionally, there may be issues when adding a new document with respect to ensuring valid combinations of the upper doctypes on the new record. For example, how do you ensure that a new activity has a valid compination of project and wbs?
+
+This will most likely require the following considerations
+1. Place the lower-down doctypes on the transactions dashboard. This will give you quick add and goto functionality that will pre-apply filters on link fields
+1. On the lower-doctypes:
+    1. Add field visibility filters on the lower-down doctypes so that users must select a link on the highest order doctypes first.
+    1. Place custom result filters on secondary links so that (when the are revealed) they filter results by the seleted higher-order doctype link values)
+    1. Possibly look into removing the lower-order doctypes from menus and searches - this may be difficult as this is not a capability out of the box.
 
 ## Child Tables as Master Data
+This is the most obvious use case for child tables. The Primary doctype has links to multiple child records. Each child record is tightly linked to its parent.
+
+The child table itself is used to store important information such as counts, quantities or other key information.
+
+In addition to this, it is also optional to use link fields from the child table to other doctypes. You would most likely do this to access master data from the related doctype.
+
+In the example below the Activity table is tightly linked to Activity Resource child table, where all of the information about resources assigned to the activity is stored. 
+
+The child table also has links to the resources doctype. The resources doctype is used to define a master list of available resources in the application and their default prices and work rates. The child table will have a quick reference to this master data via the link field, but will independantly store its values from the master data table onve the primary selection is made.
+
 ![alt text](Child%20is%20master%20data.png?raw=true "Child tables as master data erd example")
 
+This type of configuration has few drawbacks as this is primarily the intended usage of child table data. Both the interface itself and the datastructures are well managed by the default functionality of frappe.
 
+One key area of consideration is custom behaviour for child table fields in the interface. Child tables do not have their own **[Doctype Name].js** file. Instad custom behaviour needs to be built into the parent doctype's **[Doctype Name].js** file. To deal with child table fields, the following triggers are made available dynamically in parent doctypes:
+1. *[Child Doctype Fieldname]_add*: This will be called when a new child entry is added. This would most likely be used to recalculate totals or call triggers on other related doctypes.
+1. *[Child Doctype Fieldname]_move*: This will be called whenever the position of a child doctype record is changed
+1. *[Child Doctype Fieldname]_before_remove*: This will be called before a row is removed. Returning *false* will cancel the remove.
+1. *[Child Doctype Fieldname]remove*: Called after removing a record from the child table, this trigger could be used for calling other supporting functions to recalculate totals or tidy up/adjust other related tables.
 
 ## Child Tables for interface 
+Given the fact that Doctypes are intrinsically a representation not just of underlying data structures, but are also strongly tied to the interface within frappe, there are times where child tables could be more readily used for interface/viewing functionality rather than true data storage.
+
+A good example of this is the way in which ERPnext implements its Project and Activity relationship. For interface purposes, the project doctype contains a child table of activities so that a user can create and view activities directly within the related project. The activities themselves however can benefit from gantt and kanban views, which are not available if the activities are only represented within a child table.
+
+To resolve this issue, a detailed activity doctype is defined as the master activity record. This is where all detailed activity information is stored and this is where gantt and kanban views can be accessed. The project activity child table is simply used as an interface convenience and only contains some basic summary information, along with buttons and other interface actions in order to jump to the detailed activity doc type.
+
 ![alt text](Child%20Tables%20for%20Interface.png?raw=true "Child tables as interface erd example")
 
-
+Using child tables is this manner is not the originally intended purpose of the child doctype, so this type of design will bring with it some challenges:
+1. Referential integrity will be enforced:
+    1. When deleteing from the detailed activity doctype you would need to delete any child table records before you will be able to delete the detailed activity record.
+    1. When deleting from the child table you should also delete the detailed activity record.
+    1. when deleting the project, then you should also delete the child table records and the detailed activity records.
+1. Choosing where information is stored will be a key challenge. in most cases the best strategy will be to keep everything on the detailed master doctypes, hoever some of the information may need to be copied to the child table for viewing purposes. This means you will also need to consider how information updates are performed:
+    1. You could choose to make the child table information fully read-only, thus ensuring that you have to maintain the master record only.
+    1. You may also choose to make the child table more interactive by making the values fully ediatable. To do this you would need to create custom functions to copy data from the master record onto the non-linked child table fields. Triggers would then need to be created to synchronise changes from child to master and vice-versa depending on where the edits took place.
+    
 
 ## Child tables for weak traceability
 ![alt text](Weak%20Traceability.png?raw=true "Child tables for weak traceability interface erd example")
@@ -109,11 +152,7 @@ The idx field corresponds to the row ordering that is displayed in the interface
 # Old Stuff
 ## Strategy 1
 __Point children to parents__
-If you don't need to visually see a list of child items in the parent record, then this is the simplest solution. Simply add a link field in doctype and point at another doctype. In this way many children can point at the one parent document. The restriction here is that without a child table or some other linking doctype. a child can only point to one doctype at a time (in the same field at least).
 
-One Parent <----- many children
-
-You could also add a transactions dashboard area to the parent, which would indicate to the user that there is a related child table. The dashboard area would add the capability to add a child record with the linked parent field already filled in. It would also have a notification count against each related doctyple based on how many are considered active/open at that moment
 
 ## Strategy 2
 __A basic child table__
