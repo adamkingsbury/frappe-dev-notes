@@ -80,6 +80,9 @@ noting the record from the parent table that each child record relates to
 This tells you which field in the parent table this child record is related to...In this way it is actually possible to re-use the child table in the same parent doc. This would result in two tables visible in the interface, and the data would be stored in a single child doctype.
 This field is also used to manage differening parent field references if more than one doctype uses this child doctype.
 
+#### idx
+The idx field corresponds to the row ordering that is displayed in the interface. This will determine which position each item will appear at an this is automatically updated when using the interface.....it is not looked after automatically if you are working with this table programatically.
+
 ## Strategy 1
 __Point children to parents__
 If you don't need to visually see a list of child items in the parent record, then this is the simplest solution. Simply add a link field in doctype and point at another doctype. In this way many children can point at the one parent document. The restriction here is that without a child table or some other linking doctype. a child can only point to one doctype at a time (in the same field at least).
